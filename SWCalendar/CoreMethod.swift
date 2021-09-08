@@ -7,10 +7,8 @@
 
 import Foundation
 
-let standardYear = 1 // 기준 년월일 1년 1월 1일 월요일
-
 func isLeapYear(year: Int) -> Bool {
-    if (year%4 == 0 && year%100 == 0) || year%400 == 0{
+    if (year%4 == 0 && year%100 != 0) || year%400 == 0{
         return true //4로 떨어지고 100으로 안떨어지거나 400으로 떨어지면 윤년
     }else{ return false } //아니면 평년
 }
@@ -23,13 +21,12 @@ func getFirstDay(year: Int, month: Int, day: Int) -> Int {
     var days = (year - 1) * 365 + leapYear + 1 // 1년 1월 1일 기준 월요일로 잡고 월요일값 1에 일 수 만큼 더한 후 7로 나누어 그 해 첫 요일 값을 구한다.
     
     var monthDay = 0
+    
     for i in 1..<month {
         monthDay += getMonthDay(year: year, month: i)
     }
-    
     days += monthDay
-    days += day
-    
+
     return days % 7
 }
 

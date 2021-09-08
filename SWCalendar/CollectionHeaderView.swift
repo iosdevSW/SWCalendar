@@ -56,7 +56,7 @@ class CollectionHeaderView:UICollectionReusableView,UICollectionViewDelegate,UIC
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CollectionCell
-        cell.dateLabel.font = .systemFont(ofSize: 18, weight: .light)
+        cell.dateLabel.font = .systemFont(ofSize: 14, weight: .thin)
         cell.dateLabel.text = self.dayArray[indexPath.row]
         
         return cell
