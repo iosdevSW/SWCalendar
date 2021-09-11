@@ -27,8 +27,6 @@ class CollectionHeaderView:UICollectionReusableView,UICollectionViewDelegate,UIC
         self.collectionView.dataSource = self
         self.addSubView()
         self.layout()
-        
-        
     }
     
     required init?(coder: NSCoder) {

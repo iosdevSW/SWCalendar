@@ -8,8 +8,8 @@
 import UIKit
 
 class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource {
+//    var calendarViewInfo: CalendarViewInfo = CalendarViewInfo()
     let cellSize: CGFloat = 44
-    let dayArray = ["일","월","화","수","목","금","토",]
     var year = 0
     var month = 0
     var day = 0
@@ -32,6 +32,26 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         return label
     }()
     
+    let nextMonthButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(">", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .thin)
+        
+        return button
+    }()
+    
+    let previousMonthButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("<", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .thin)
+        
+        return button
+    }()
+    
     let calendarView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +68,7 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         self.view.backgroundColor = .white
         self.addSubView()
         self.layout()
+        self.addTaget()
         self.calendarView.delegate = self
         self.calendarView.dataSource = self
         self.setGesture()
@@ -66,6 +87,13 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         self.view.addSubview(self.calendarView)
         
         self.titleView.addSubview(self.titleLabel)
+        self.titleView.addSubview(self.nextMonthButton)
+        self.titleView.addSubview((self.previousMonthButton))
+    }
+    
+    func addTaget(){
+        self.previousMonthButton.addTarget(self, action: #selector(self.respondToButton(_:)), for: .touchUpInside)
+        self.nextMonthButton.addTarget(self, action: #selector(self.respondToButton(_:)), for: .touchUpInside)
     }
     
     func layout(){
@@ -87,6 +115,20 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         NSLayoutConstraint.activate([
             self.titleLabel.centerXAnchor.constraint(equalTo: self.titleView.centerXAnchor),
             self.titleLabel.centerYAnchor.constraint(equalTo: self.titleView.centerYAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            self.previousMonthButton.trailingAnchor.constraint(equalTo: self.titleLabel.leadingAnchor, constant: -10),
+            self.previousMonthButton.centerYAnchor.constraint(equalTo: self.titleView.centerYAnchor),
+            self.previousMonthButton.widthAnchor.constraint(equalToConstant: 40),
+            self.previousMonthButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+        
+        NSLayoutConstraint.activate([
+            self.nextMonthButton.leadingAnchor.constraint(equalTo: self.titleLabel.trailingAnchor, constant: 10),
+            self.nextMonthButton.centerYAnchor.constraint(equalTo: self.titleView.centerYAnchor),
+            self.nextMonthButton.widthAnchor.constraint(equalToConstant: 40),
+            self.nextMonthButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
 
@@ -152,13 +194,39 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
             }else{
                 self.month += 1
             }
+            break
         default:
             return
         }
         self.titleLabel.text = "\(year)년 \(month)월"
         self.calendarView.reloadData()
-    
     }
+    
+    @objc func respondToButton(_ button:UIButton){
+        switch button {
+        case self.previousMonthButton:
+            if month == 1 {
+                self.year -= 1
+                self.month = 12
+            }else{
+            self.month -= 1
+            }
+            break
+        case self.nextMonthButton:
+            if self.month == 12 {
+                self.year += 1
+                self.month = 1
+            }else{
+                self.month += 1
+            }
+            break
+        default:
+            return
+        }
+        self.titleLabel.text = "\(year)년 \(month)월"
+        self.calendarView.reloadData()
+    }
+    
 }
 extension CalendarViewController: UICollectionViewDelegateFlowLayout {
     //뷰 크기 리턴

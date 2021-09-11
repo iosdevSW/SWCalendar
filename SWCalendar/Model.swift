@@ -6,3 +6,12 @@
 //
 
 import UIKit
+
+struct CalendarViewInfo{
+    var cellSize: CGFloat = 0
+    private var calendarViewWidth: CGFloat?
+    private var calendarViewHeight: CGFloat?
+    let widthNumberOfCell = 7
+    var hieghtNumberOfCell:Int?
+    var dayArray = ["일","월","화","수","목","금","토"]
+}
