@@ -10,10 +10,13 @@ import UIKit
 class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource {
 //    var calendarViewInfo: CalendarViewInfo = CalendarViewInfo()
     let cellSize: CGFloat = 44
+    let widthNumberOfcell: CGFloat = 7
+    var heightNumberOfCell: CGFloat = 6
     var year = 0
     var month = 0
     var day = 0
     var seletedCell:Int?
+    var calendarViewHeightConstraint: NSLayoutConstraint?
 
     
     let titleView: UIView = {
@@ -75,6 +78,12 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         self.calendarView.dataSource = self
         self.setGesture()
         
+        self.getToday()
+        
+    }
+    
+    //MARK: Method
+    func getToday(){
         let today = Date()
         let calendar = Calendar.current
         self.year = calendar.component(.year, from: today)
@@ -82,8 +91,22 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         self.day = calendar.component(.day, from: today)
         self.titleLabel.text = "\(year)년 \(month)월"
     }
-    
-    //MARK: Method
+    func getNumberOfCell() -> Int{
+        let startDay = getFirstDay(year: self.year, month: self.month, day: self.day)
+        let day = getMonthDay(year: self.year, month: self.month)
+        
+        if startDay + day <= 35{
+            self.calendarViewHeightConstraint?.isActive = false
+            self.calendarViewHeightConstraint = self.calendarView.heightAnchor.constraint(equalToConstant: self.cellSize * 6)
+            self.calendarViewHeightConstraint?.isActive = true
+            return 35
+        }else {
+            self.calendarViewHeightConstraint?.isActive = false
+            self.calendarViewHeightConstraint = self.calendarView.heightAnchor.constraint(equalToConstant: self.cellSize * 7)
+            self.calendarViewHeightConstraint?.isActive = true
+            return 42
+        }
+    }
     
     func presentCalendar(row: Int, cell:UICollectionViewCell){
         let cell = cell as! CollectionCell
@@ -106,7 +129,7 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
             cell.dateLabel.text = "*"
         }
     }
-    
+    //MARK: addsubview
     func addSubView(){
         self.view.addSubview(self.titleView)
         self.view.addSubview(self.calendarView)
@@ -115,25 +138,24 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         self.titleView.addSubview(self.nextMonthButton)
         self.titleView.addSubview((self.previousMonthButton))
     }
-    
+    //MARK: addtarget
     func addTaget(){
         self.previousMonthButton.addTarget(self, action: #selector(self.respondToButton(_:)), for: .touchUpInside)
         self.nextMonthButton.addTarget(self, action: #selector(self.respondToButton(_:)), for: .touchUpInside)
     }
-    
+    //MARK: layout
     func layout(){
         NSLayoutConstraint.activate([
             self.titleView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             self.titleView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.titleView.widthAnchor.constraint(equalToConstant: self.cellSize * 7),
+            self.titleView.widthAnchor.constraint(equalToConstant: self.cellSize * self.widthNumberOfcell),
             self.titleView.heightAnchor.constraint(equalToConstant: self.cellSize),
         ])
         
         NSLayoutConstraint.activate([
             self.calendarView.topAnchor.constraint(equalTo: self.titleView.bottomAnchor),
             self.calendarView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.calendarView.widthAnchor.constraint(equalToConstant: self.cellSize * 7),
-            self.calendarView.heightAnchor.constraint(equalToConstant: self.cellSize * 6)
+            self.calendarView.widthAnchor.constraint(equalToConstant: self.cellSize * self.widthNumberOfcell),
         ])
         
         //Lv2
@@ -160,7 +182,8 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
     //MARK:- CollectionView Delegate,DataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return 35
+        print("excute")
+        return getNumberOfCell()
 
     }
     
