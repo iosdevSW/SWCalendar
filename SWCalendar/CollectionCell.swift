@@ -9,6 +9,14 @@ import UIKit
 
 class CollectionCell: UICollectionViewCell {
     //MARK: ProPerties
+    let frameView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 20
+        
+        return view
+    }()
+    
     let dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -31,13 +39,22 @@ class CollectionCell: UICollectionViewCell {
     
     //MARK:Method
     func addSubView(){
-        self.addSubview(dateLabel)
+        self.addSubview(self.frameView)
+        
+        self.frameView.addSubview(self.dateLabel)
     }
     
     func layout(){
         NSLayoutConstraint.activate([
-            self.dateLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            self.dateLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            self.frameView.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant:  1),
+            self.frameView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant:  -1),
+            self.frameView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -1),
+            self.frameView.topAnchor.constraint(equalTo: self.topAnchor, constant: 1)
+        ])
+        
+        NSLayoutConstraint.activate([
+            self.dateLabel.centerXAnchor.constraint(equalTo: self.frameView.centerXAnchor),
+            self.dateLabel.centerYAnchor.constraint(equalTo: self.frameView.centerYAnchor)
         ])
     }
     

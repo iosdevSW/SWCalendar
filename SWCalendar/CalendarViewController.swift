@@ -13,6 +13,8 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
     var year = 0
     var month = 0
     var day = 0
+    var seletedCell:Int?
+
     
     let titleView: UIView = {
         let view = UIView()
@@ -78,10 +80,33 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         self.year = calendar.component(.year, from: today)
         self.month = calendar.component(.month, from: today)
         self.day = calendar.component(.day, from: today)
-        titleLabel.text = "\(year)년 \(month)월"
+        self.titleLabel.text = "\(year)년 \(month)월"
     }
     
     //MARK: Method
+    
+    func presentCalendar(row: Int, cell:UICollectionViewCell){
+        let cell = cell as! CollectionCell
+        let dayNumber = getFirstDay(year: self.year, month: self.month, day: self.day)
+       
+        if row >= dayNumber{
+            if row >= getMonthDay(year: self.year, month: self.month) + dayNumber{
+                cell.dateLabel.text = "*" // 미만
+            }else{
+                cell.dateLabel.text = "\(row + 1 - dayNumber)"
+               
+                //선택된 셀 배경 바꾸기
+                if let selectedRow = seletedCell {
+                    if selectedRow == row{
+                        cell.frameView.backgroundColor = UIColor(red: 100/255, green: 150/255, blue: 255/255, alpha: 1.0)
+                    }
+                }
+            }
+        }else { // 초과
+            cell.dateLabel.text = "*"
+        }
+    }
+    
     func addSubView(){
         self.view.addSubview(self.titleView)
         self.view.addSubview(self.calendarView)
@@ -141,21 +166,12 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for:indexPath) as! CollectionCell
-        
-        let dayNumber = getFirstDay(year: self.year, month: self.month, day: self.day)
-        
-        let row = indexPath.row
-        
-        if row >= dayNumber{
-            if row >= getMonthDay(year: self.year, month: self.month) + dayNumber{
-                cell.dateLabel.text = "*"
-            }else{
-                cell.dateLabel.text = "\(indexPath.row + 1 - dayNumber)"
-            }
-        }else {
-            cell.dateLabel.text = "*"
-        }
+        cell.frameView.backgroundColor = .white
         cell.dateLabel.font = .systemFont(ofSize: 16, weight: .thin)
+        
+        self.presentCalendar(row: indexPath.row, cell: cell)
+        
+       
         return cell
     }
     
@@ -163,6 +179,12 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerView", for: indexPath) as! CollectionHeaderView
         
         return headerView
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.seletedCell = indexPath.row
+        collectionView.reloadData()
+        
     }
     
     //MARK:- setGesture
@@ -198,6 +220,7 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         default:
             return
         }
+        self.seletedCell = nil
         self.titleLabel.text = "\(year)년 \(month)월"
         self.calendarView.reloadData()
     }
