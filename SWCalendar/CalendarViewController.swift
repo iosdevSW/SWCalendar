@@ -8,10 +8,7 @@
 import UIKit
 
 class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource {
-//    var calendarViewInfo: CalendarViewInfo = CalendarViewInfo()
-    let cellSize: CGFloat = 44
-    let widthNumberOfcell: CGFloat = 7
-    var heightNumberOfCell: CGFloat = 6
+    var calendarInfo: CalendarViewInfo = CalendarViewInfo()
     var year = 0
     var month = 0
     var day = 0
@@ -71,6 +68,7 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
+        self.modelingInit()
         self.addSubView()
         self.layout()
         self.addTaget()
@@ -83,6 +81,11 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
     }
     
     //MARK: Method
+    func modelingInit(){
+        self.calendarInfo.cellSize = 44
+        self.calendarInfo.heightNumberOfCell = 6
+    }
+    
     func getToday(){
         let today = Date()
         let calendar = Calendar.current
@@ -95,17 +98,16 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         let startDay = getFirstDay(year: self.year, month: self.month, day: self.day)
         let day = getMonthDay(year: self.year, month: self.month)
         
-        if startDay + day <= 35{
-            self.calendarViewHeightConstraint?.isActive = false
-            self.calendarViewHeightConstraint = self.calendarView.heightAnchor.constraint(equalToConstant: self.cellSize * 6)
-            self.calendarViewHeightConstraint?.isActive = true
-            return 35
+        if startDay + day <= calendarInfo.numberOfItem{
+            self.calendarInfo.heightNumberOfCell = 6
         }else {
-            self.calendarViewHeightConstraint?.isActive = false
-            self.calendarViewHeightConstraint = self.calendarView.heightAnchor.constraint(equalToConstant: self.cellSize * 7)
-            self.calendarViewHeightConstraint?.isActive = true
-            return 42
+            self.calendarInfo.heightNumberOfCell = 7
         }
+        self.calendarViewHeightConstraint?.isActive = false
+        self.calendarViewHeightConstraint = self.calendarView.heightAnchor.constraint(equalToConstant: self.calendarInfo.getCalendarViewHeight)
+        self.calendarViewHeightConstraint?.isActive = true
+        
+        return self.calendarInfo.numberOfItem
     }
     
     func presentCalendar(row: Int, cell:UICollectionViewCell){
@@ -148,14 +150,14 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         NSLayoutConstraint.activate([
             self.titleView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             self.titleView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.titleView.widthAnchor.constraint(equalToConstant: self.cellSize * self.widthNumberOfcell),
-            self.titleView.heightAnchor.constraint(equalToConstant: self.cellSize),
+            self.titleView.widthAnchor.constraint(equalToConstant: self.calendarInfo.getCalendarViewWidth),
+            self.titleView.heightAnchor.constraint(equalToConstant: self.calendarInfo.cellSize!),
         ])
         
         NSLayoutConstraint.activate([
             self.calendarView.topAnchor.constraint(equalTo: self.titleView.bottomAnchor),
             self.calendarView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            self.calendarView.widthAnchor.constraint(equalToConstant: self.cellSize * self.widthNumberOfcell),
+            self.calendarView.widthAnchor.constraint(equalToConstant: self.calendarInfo.getCalendarViewWidth),
         ])
         
         //Lv2
@@ -182,9 +184,7 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
     //MARK:- CollectionView Delegate,DataSource
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("excute")
         return getNumberOfCell()
-
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -194,7 +194,6 @@ class CalendarViewController: UIViewController,UICollectionViewDelegate,UICollec
         
         self.presentCalendar(row: indexPath.row, cell: cell)
         
-       
         return cell
     }
     
@@ -278,8 +277,8 @@ extension CalendarViewController: UICollectionViewDelegateFlowLayout {
     //뷰 크기 리턴
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             return CGSize(
-                width: self.cellSize,
-                height: self.cellSize
+                width: self.calendarInfo.cellSize!,
+                height: self.calendarInfo.cellSize!
                 )
     }
     
@@ -293,8 +292,8 @@ extension CalendarViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(
-            width: self.cellSize * 7,
-            height: self.cellSize)
+            width: self.calendarInfo.getCalendarViewWidth,
+            height: self.calendarInfo.cellSize!)
     }
 
 }
